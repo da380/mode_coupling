@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# set the number of processors
+njob=4
+
+dspec_pre << !
+dspec.source
+dspec.rec
+0.1
+2
+20
+128
+0.01
+0.05
+0
+128
+$njob
+matrix_parts.bin
+!
+
+
+for i in $(seq 1 $njob)
+do
+  dspec_cal $i > dspec_cal.out.$i &
+done
+wait
+
+dspec_pro << !
+$njob
+dspec.out
+dspec.ts
+!
+
