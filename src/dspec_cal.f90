@@ -12,21 +12,22 @@ program dspec_cal
 
   integer(i4b), parameter :: maxit = 10000
 
-  
+  character(len=256) :: datapath  
   
   character(len=1), dimension(:), allocatable :: iq
   character(len=256), parameter :: spec_out = 'dspec_cal.out.'
   character(len=10) :: string
   character(len=256), parameter :: job_pref = 'dspec_job.'
 
-  character(len=256) :: matrix_file
+  character(len=256) :: matrix_file,file
+  character(len=80) :: getunx,string2
   character(len=10), dimension(:), allocatable :: rec_string
 
   integer(i4b), parameter :: io1 = 7,io2=8,io3=9,io4=10
   integer(i4b) :: mtot,nelem,im,i,j,info,istat, & 
        nindex,ifgot,nw,iw,ir1,nt,i1,i2,mex,qex,nt0,ne, & 
        ntb,md,iter,mindex,ib,jb,tbd,count,ntime,ijob, &
-       ifcor,im2,nr,ir
+       ifcor,im2,nr,ir,nbyts,lmod,lpath
 
   integer(i4b), dimension(:), allocatable :: nn,ll,ity
 
@@ -87,10 +88,15 @@ program dspec_cal
   common/premdata/amp,aker,ar1,ar2,r1,r2,nord,it,lord
 
   ! get the job id number
-  call get_command_argument(1,string)
-  read(string,*) ijob
+  !call get_command_argument(1,string)
+  !read(string,*) ijob
+  call chekcl('|-p:o:1:[../data]'                   & 
+       //'|-j:r:1:job ID'                 &  
+       //'|-m:o:1:[SPRM1.BIN] mode catalog'  &                   
+       //'|')
 
-
+      string2 = getunx('-j',1,nbyts)
+      read(string2,*) ijob
 
   ! open the job input file
   write(string,'(i10)') ijob
@@ -133,9 +139,13 @@ program dspec_cal
   read(io1) a2
   close(io1)
 
+! location of files
+  datapath=getunx('-p',1,lpath)
   
   ! open the mode catalog
-  call openfl(7,'/home/david/coupling_standalone/data/SPRM1.BIN', & 
+  file = datapath(1:lpath)//'/'//getunx('-m',1,lmod)
+
+  call openfl(7,file, & 
        1 ,0,0,istat,4096)
 
   ! set up mode catalog

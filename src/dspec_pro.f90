@@ -19,7 +19,10 @@ program dspec_pro
   integer(i4b) :: mtot,nelem,im,i,j,info,istat, & 
        nindex,ifgot,nw,iw,ir1,nt,i1,i2,mex,qex,nt0,ne, & 
        ntb,md,iter,mindex,ib,jb,tbd,it,count,ntime,ijob,njob, & 
-       i11,i22,nr,ir
+       i11,i22,nr,ir,nbyts,lmod,lpath
+
+  character(len=256) :: datapath  
+  character(len=256) :: file
 
   integer(i4b), dimension(:), allocatable :: nn,ll,ity
 
@@ -38,7 +41,9 @@ program dspec_pro
   complex(dpc), dimension(:), allocatable :: ww
   complex(dpc), dimension(:,:), allocatable :: acl
   complex(dpc), dimension(:,:), allocatable :: dat,dtmp
-  
+
+  character(len=80) :: getunx,string2
+ 
   
   real(sp), dimension(12) :: amp
   real(sp), dimension(10) :: aker
@@ -50,10 +55,16 @@ program dspec_pro
   common/premdata/amp,aker,ar1,ar2,r1,r2,nord,it,lord
 
 
+  call chekcl('|-p:o:1:[../data]'                   & 
+       //'|-t:r:1:Total jobs'                 &  
+       //'|-m:o:1:[SPRM1.BIN] mode catalog'  &                   
+       //'|')
 
+  string2 = getunx('-t',1,nbyts)
+  read(string2,*) njob
 
   ! get the total number of jobs
-  call get_integer(' njob = ',njob)
+  !call get_integer(' njob = ',njob)
   call get_string(' spectra file = ',spec_out)
   call get_string(' time series file = ',time_out)
   
@@ -125,8 +136,14 @@ program dspec_pro
   end do
 
 
+! location of files
+  datapath=getunx('-p',1,lpath)
+  
   ! open the mode catalog
-  call openfl(7,'/home/david/coupling_standalone/data/SPRM1.BIN', & 
+  file = datapath(1:lpath)//'/'//getunx('-m',1,lmod)
+
+  ! open the mode catalog
+  call openfl(7,file, & 
        1 ,0,0,istat,4096)
   
   ! set up mode catalog

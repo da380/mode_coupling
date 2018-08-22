@@ -23,7 +23,7 @@ program mdcpl
   ! w0 is the fiducial frequency used in the calculations
 
   integer(i4b), dimension(MMODES) :: lord,nord
-    character(len=256) :: datapath
+  character(len=256) :: datapath
 
   real(dp), dimension(MDIM) :: wr,wq 
  
@@ -85,10 +85,8 @@ program mdcpl
        //'|-pc:o:1:[default.pc] startup plotting commands' &
        //'|')
 
-
 !     location of files
       datapath=getunx('-p',1,lpath)
-
   
   file = datapath(1:lpath)//'/'//getunx('-lu2',1,ll)
   open(2,file=file,status='old')

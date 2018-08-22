@@ -1,0 +1,12 @@
+../bin/mode_list << !
+$1
+$2
+!
+
+../bin/mdcpl << !
+$3
+$4
+1
+1
+matrix_parts.bin
+!

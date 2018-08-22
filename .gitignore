@@ -1,2 +1,11 @@
 mod/*.mod
 obj/*.o
+bin/*
+data/PREM222.BIN
+examples/dspec_job*
+examples/dspec_cal.out.*
+examples/dspec.ts.*
+examples/matrix_parts.bin
+examples/dspec.out.*
+examples/modes.out
+examples/mdcpl.out
