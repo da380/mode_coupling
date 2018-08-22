@@ -1,9 +1,9 @@
-mode_list << !
+./mode_list << !
 $1
 $2
 !
 
-mdcpl << !
+./mdcpl << !
 $3
 $4
 1

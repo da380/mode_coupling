@@ -9,7 +9,7 @@ MODFLAG=-J$(MODDIR)
 OPTFLAGS=-O3
 F77FLAGS=
 #LAPACK_LINK=-L/opt/acml4.4.0/gfortran64_mp/lib -lacml_mp -lacml_mv
-LAPACK_LINK= -l lapack
+LAPACK_LINK= -L/home/chaos/moulik/libtage -llapack -lblas
 
 CFLAGS=$(OPTFLAGS)
 F95FLAGS=$(COMP_F95_FLAGS) $(OPTFLAGS)

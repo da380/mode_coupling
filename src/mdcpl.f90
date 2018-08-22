@@ -23,6 +23,7 @@ program mdcpl
   ! w0 is the fiducial frequency used in the calculations
 
   integer(i4b), dimension(MMODES) :: lord,nord
+    character(len=256) :: datapath
 
   real(dp), dimension(MDIM) :: wr,wq 
  
@@ -75,28 +76,33 @@ program mdcpl
 
   
   
-  call chekcl('|-lu2:o:1:[/home/david/coupling_standalone/data/foanis05.222]'                   & 
-       //'|-lu7:o:1:[mdcpl.out]'                                                                     &  
-       //'|-lu3:o:1:[/home/david/coupling_standalone/data/m1084x2.htm] model on unit 3 (rdmdl)' & 
-       //'|-model:o:1:[/home/david/coupling_standalone/data/S20RTS.sph] Model'                  & 
-       //'|-pc:o:1:[default.pc] startup plotting commands'                                           &
+  call chekcl('|-p:o:1:[../data]'                   & 
+       //'|-lu2:o:1:[foanis05.222]'                 &  
+       //'|-lu7:o:1:[mdcpl.out]'                    &  
+       //'|-lu3:o:1:[m1084x2.htm] model on unit 3 (rdmdl)' & 
+       //'|-ref:o:1:[PREM222.BIN] reference model'  &                   
+       //'|-model:o:1:[S20RTS.sph] Model'                  & 
+       //'|-pc:o:1:[default.pc] startup plotting commands' &
        //'|')
 
 
+!     location of files
+      datapath=getunx('-p',1,lpath)
 
   
-  file = getunx('-lu2',1,ll)
+  file = datapath(1:lpath)//'/'//getunx('-lu2',1,ll)
   open(2,file=file,status='old')
   file=getunx('-lu7',1,ll)
   open(7,file=file)
   
-  file=getunx('-lu3',1,ll)
+  file=datapath(1:lpath)//'/'//getunx('-lu3',1,ll)
   open(3,file=file)
 
   
   ! open the PREM mode catalogue
+      file=datapath(1:lpath)//'/'//getunx('-ref',1,ll)
   
-  call openfl(1,'/home/david/coupling_standalone/data/PREM222.BIN',1,0,0,istat,5364)
+  call openfl(1,file,1,0,0,istat,5364)
   call seteig(1)
 
 
@@ -124,7 +130,7 @@ program mdcpl
 !
   fus=1.0
   !Restored by APV
-  call intpltnnew(getunx('-model',1,ll))
+  call intpltnnew(datapath(1:lpath)//'/'//getunx('-model',1,ll))
   
   !! alternate version that reads in separate vs, vp, and rho
   !! models

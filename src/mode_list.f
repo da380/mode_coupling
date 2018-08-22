@@ -20,6 +20,7 @@ c     in given range
       character*1 iq(MMODES)
       character*80 file
       character*80 getunx
+      character*160 datapath
 
       common/eig1/n1,jcom1,l1,om1,q1,cgp1,avert1,ahor1,phis1
      1        ,u1(222),up1(222),v1(222),vp1(222),ph1(222),php1(222)
@@ -55,17 +56,20 @@ c=====================================================================c
 !     1         //'|')
 
 
-      call chekcl('|-lu2:o:1:[/home/david/coupling_standalone/data/foanis05.222]'                    
+      call chekcl('|-p:o:1:[../data]'                    
+     1     //'|-lu2:o:1:[foanis05.222]'                                                                       
      1     //'|-lu7:o:1:[mdcpl.out]'                                                                       
-     1     //'|-lu3:o:1:[/home/david/coupling_standalone/data/m1084x2.htm] model on unit 3 (rdmdl)'  
-     1     //'|-model:o:1:[/home/david/coupling_standalone/data/S20RTS.sph] Model'                   
+     1     //'|-lu3:o:1:[m1084x2.htm] model on unit 3 (rdmdl)'  
+     1     //'|-model:o:1:[S20RTS.sph] Model'                   
+     1     //'|-ref:o:1:[PREM222.BIN] reference model'                   
      1     //'|-pc:o:1:[default.pc] startup plotting commands'                                           
      1     //'|')
 
-
+c     location of files
+      datapath=getunx('-p',1,lpath)
 
 c     this opens the PREM model file default foanis05.222
-      file=getunx('-lu2',1,ll)
+      file=datapath(1:lpath)//'/'//getunx('-lu2',1,ll)
       open(2,file=file,status='old')
 
 
@@ -78,7 +82,8 @@ c     this opens the outout file mdcpl.out
 
 
 c     open the PREM catelog
-      call openfl(1,'/home/david/coupling_standalone/data/PREM222.BIN',1,0,0,
+      file=datapath(1:lpath)//'/'//getunx('-ref',1,ll)
+      call openfl(1,file,1,0,0,
      1     istat,5364)
 !      call openfl(1,'/home/eeyore1/john/dta/PREM.BIN',1,0,0,
 !     1    istat,5364)
