@@ -29,9 +29,9 @@ $(OBJDIR)/%.o:%.c
 	$(CCOMPILE) -o $@ $+
 
 
-.PHONY: all mode_list mdcpl_sp mdcpl dspec_pre dspec_cal dspec_pro
+.PHONY: all mode_list mdcpl_sp mdcpl dspec_pre dspec_cal dspec_pro QnmS
 
-all: mode_list mdcpl_sp mdcpl dspec_pre dspec_cal dspec_pro
+all: mode_list mdcpl_sp mdcpl dspec_pre dspec_cal dspec_pro QnmS
 
 mode_list: $(BINDIR)/mode_list
 mdcpl_sp: $(BINDIR)/mdcpl_sp
@@ -39,6 +39,7 @@ mdcpl: $(BINDIR)/mdcpl
 dspec_pre: $(BINDIR)/dspec_pre
 dspec_cal: $(BINDIR)/dspec_cal
 dspec_pro: $(BINDIR)/dspec_pro
+QnmS: $(BINDIR)/QnmS
 
 
 
@@ -143,6 +144,23 @@ $(BINDIR)/dspec_pre: $(OBJDIR)/nrtype.o \
 	$(OBJDIR)/module_fourier.o \
 	$(OBJDIR)/dspec_pre.o
 	$(F95LINK) -o $@ $+
+
+$(BINDIR)/QnmS: $(OBJDIR)/nrtype.o \
+	$(OBJDIR)/nrutil.o \
+	$(OBJDIR)/module_util.o \
+	$(OBJDIR)/module_fourier.o \
+	$(OBJDIR)/fgetenv.o \
+	$(OBJDIR)/getgnl.o \
+	$(OBJDIR)/chekgl.o \
+	$(OBJDIR)/getunx.o \
+	$(OBJDIR)/chekcl.o \
+	$(OBJDIR)/csubs.o \
+	$(OBJDIR)/rdsource.o \
+	$(OBJDIR)/julday.o \
+	$(OBJDIR)/lpyr.o \
+	$(OBJDIR)/QnmS.o
+	$(F95LINK) -o $@ $+
+
 
 $(BINDIR)/dspec_cal: $(OBJDIR)/csubs.o \
 	$(OBJDIR)/istlen.o \
