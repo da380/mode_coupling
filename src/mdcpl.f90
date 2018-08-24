@@ -23,7 +23,8 @@ program mdcpl
   ! w0 is the fiducial frequency used in the calculations
 
   integer(i4b), dimension(MMODES) :: lord,nord
-  character(len=256) :: datapath
+  integer(i4b)::lnblnk
+  character(len=256) :: datapath,string,refmodel,model3d
 
   real(dp), dimension(MDIM) :: wr,wq 
  
@@ -75,8 +76,11 @@ program mdcpl
 
 
   
-  
-  call chekcl('|-p:o:1:[../data]'                   & 
+  call chekcl('|-smin:r:1: minimum harmonic degree'           &            
+       //'|-smax:r:1: maximum harmonic degree'                   &
+       //'|-rot:o:1: do you want include rotation? yes=1 no=0 [1]'  &                  
+       //'|-ell:o:1: do you want include ellip.? yes=1 no=0 [1]'     &              
+       //'|-p:o:1:[../data]'                   & 
        //'|-lu2:o:1:[foanis05.222]'                 &  
        //'|-lu7:o:1:[mdcpl.out]'                    &  
        //'|-lu3:o:1:[m1084x2.htm] model on unit 3 (rdmdl)' & 
@@ -84,6 +88,24 @@ program mdcpl
        //'|-model:o:1:[S20RTS.sph] Model'                  & 
        //'|-pc:o:1:[default.pc] startup plotting commands' &
        //'|')
+
+      string=getunx('-smin',1,nbyts)
+      read(string,*) mins
+      string=getunx('-smax',1,nbyts)
+      read(string,*) maxs
+      string=getunx('-rot',1,nbyts)
+      read(string,*) isw1
+      string=getunx('-ell',1,nbyts)
+      read(string,*) isw2
+            
+!   write(6,"('Input mins & maxs  eg:0 8')")  
+!   read(5,*)mins, maxs
+!   write(6,"('do you want include rotation? yes=1 no=0')")
+!   read(5,"(i1)")isw1
+!   write(6,"('do you want include ellip.? yes=1 no=0')")
+!   read(5,"(i1)")isw2
+!   write(6,*) " afile = "
+!   read(5,*) afile
 
 !     location of files
       datapath=getunx('-p',1,lpath)
@@ -98,7 +120,8 @@ program mdcpl
 
   
   ! open the PREM mode catalogue
-      file=datapath(1:lpath)//'/'//getunx('-ref',1,ll)
+  refmodel=getunx('-ref',1,lref)
+  file=datapath(1:lpath)//'/'//refmodel(1:lnblnk(refmodel))
   
   call openfl(1,file,1,0,0,istat,5364)
   call seteig(1)
@@ -128,7 +151,8 @@ program mdcpl
 !
   fus=1.0
   !Restored by APV
-  call intpltnnew(datapath(1:lpath)//'/'//getunx('-model',1,ll))
+  model3d=getunx('-model',1,ll)
+  call intpltnnew(datapath(1:lpath)//'/'//model3d(1:lnblnk(model3d)))
   
   !! alternate version that reads in separate vs, vp, and rho
   !! models
@@ -140,15 +164,15 @@ program mdcpl
        
 
 
-  write(6,"('Input mins & maxs  eg:0 8')")  
-  read(5,*)mins, maxs
-  write(6,"('do you want include rotation? yes=1 no=0')")
-  read(5,"(i1)")isw1
-  write(6,"('do you want include ellip.? yes=1 no=0')")
-  read(5,"(i1)")isw2
-  write(6,*) " afile = "
-  read(5,*) afile
-
+!   write(6,"('Input mins & maxs  eg:0 8')")  
+!   read(5,*)mins, maxs
+!   write(6,"('do you want include rotation? yes=1 no=0')")
+!   read(5,"(i1)")isw1
+!   write(6,"('do you want include ellip.? yes=1 no=0')")
+!   read(5,"(i1)")isw2
+!   write(6,*) " afile = "
+!   read(5,*) afile
+  afile='matrix-'//refmodel(1:lnblnk(refmodel))//'-'//model3d(1:lnblnk(model3d))//'.bin'
 
 
 
@@ -263,7 +287,7 @@ program mdcpl
 
 
 
-  print *, ' writing out coupling matrices'
+  print *, ' writing out coupling matrices to '//afile(1:lnblnk(afile))
 
   print *, 'nelem = ',nelem
 

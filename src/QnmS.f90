@@ -1,4 +1,5 @@
-program dspec_pre
+program QnmS
+!program modified from dspec_pre
 
   use nrtype
   use nrutil
@@ -20,9 +21,9 @@ program dspec_pre
   
   character(len=1), dimension(:), allocatable :: iq
   character(len=256), parameter :: job_pref = 'dspec_job.'
-  character(len=256) :: job_out
+  character(len=256) :: job_out,outdir,sysstring
   character(len=10) :: string
-  character(len=256) :: source_file,cmtsolution
+  character(len=256) :: source_file,cmtsolution,tempstr
   character(len=256) :: rec_file
   character(len=80) :: getunx
   character(len=10), dimension(:), allocatable :: rec_string
@@ -33,7 +34,7 @@ program dspec_pre
   integer(i4b) :: mtot,nelem,im,i,j,info,istat, & 
        nindex,ifgot,nw,iw,ir1,nt,i1,i2,mex,qex,nt0,ne, & 
        ntb,md,iter,mindex,ib,jb,tbd,it,count,ntime, & 
-       njob,ncal,ntmp,i11,i22,nr,ir,nbyts
+       njob,ncal,ntmp,i11,i22,nr,ir,nbyts,loutdir,ierror,lmat
 
   integer(i4b), dimension(:), allocatable :: nn,ll,ity
 
@@ -64,10 +65,53 @@ program dspec_pre
   ! common block for the eigenfunctions parameters
   common/premdata/amp,aker,ar1,ar2,r1,r2,nord,it,lord
   
-  call chekcl('|   -C:o:1:CMT source file [CMTSOLUTION]'  & 
+  call chekcl('|   -f1:o:1:minimum frequency for the output spectra (in mHz)[0.1] '  & 
+       //'|   -f2:o:1:maximum frequency for the output spectra (in mHz) [2]'  & 
+       //'|   -dt:o:1:time step for the time-series (in seconds) [20]'  & 
+       //'|   -tout:o:1:length of time series (in hours) [128]'  & 
+       //'|   -df0:o:1:fractional width of a filter in the frequency domain mhz [0.01]'  & 
+       //'|   -wtb:o:1:a parameter used in the IDSM [0.05]'  & 
+       //'|   -t1:o:1:start time for a cosine bell window (in hours) [0.]'  & 
+       //'|   -t2:o:1:end time for a cosine bell window (in hours) [tout]'  & 
+       //'|   -cm:o:1:coupling matrix [matrix_parts.bin]'  & 
+       //'|   -C:o:1:CMT source file [CMTSOLUTION]'  & 
        //'|   -L:o:1:List with records [DATA/RECORDHEADERS]'     &  
+       //'|   -D:o:1:Directory for output files [SYNT]'    &
+       //'|   -s:o:1:Scratch directory for temporary files [TEMP]'    &
+       //'|   -njob:o:1:number of processors [4]'  &                   
        //'|   -v:o:0,1:Verbosity level [0]'  &                   
        //'|')
+
+  tempstr = getunx('-njob',1,nbyts)
+  read (tempstr,*) njob
+  tempstr = getunx('-f1',1,nbyts)
+  read (tempstr,*) f1
+  tempstr = getunx('-f2',1,nbyts)
+  read (tempstr,*) f2
+  tempstr = getunx('-dt',1,nbyts)
+  read (tempstr,*) dt
+  tempstr = getunx('-tout',1,nbyts)
+  read (tempstr,*) tout
+  tempstr = getunx('-df0',1,nbyts)
+  read (tempstr,*) df0
+  tempstr = getunx('-wtb',1,nbyts)
+  read (tempstr,*) wtb
+  tempstr = getunx('-t1',1,nbyts)
+  read (tempstr,*) t1  
+  tempstr = getunx('-t2',1,nbyts)
+  if (tempstr(1:lnblnk(tempstr)) == 'tout') then
+    t2=tout
+  else
+    read (tempstr,*) t2
+  endif
+
+  matrix_file=getunx('-cm',1,lmat)
+  inquire(file=matrix_file,exist=exists)
+    if(.not.exists) then
+          write(6,"('input file does not exist:',a)") matrix_file(1:lmat)
+          call exit(1)
+    endif
+    
 
   ! Read in list of modes from input file
   open(io1,file='modes.in')
@@ -153,7 +197,14 @@ program dspec_pre
 
 
   ! receiver location
-  call get_string(' receiver file = ',rec_file )
+  !call get_string(' receiver file = ',rec_file )
+  rec_file=getunx('-L',1,nbyts)
+  inquire(file=rec_file,exist=exists)
+  if(.not.exists) then
+    write(6,"('receiver file does not exist:',a)") rec_file(1:nbyts)
+    call exit(1)
+  endif!
+  
   open(99,file=trim(rec_file))
   read(99,*) nr
   allocate(station(5,nr))
@@ -163,24 +214,33 @@ program dspec_pre
   end do
   close(99)
 
-  
-
-  
-  
-
-
+!
+!---- get the name of the output directory
+!
+  outdir=getunx('-D',1,loutdir)
+  if(loutdir.gt.0) then
+    inquire(file=outdir,exist=exists)
+    if(.not.exists) then
+          sysstring='mkdir -p '//outdir(1:loutdir)
+          ierror=system(sysstring)
+          if(ierror.ne.0) then
+            write(6,"('unable to create output directory',a)") outdir(1:loutdir)
+            call exit(1)
+          endif
+    endif
+  endif
   
   ! get parameters for the calculations
-  call get_float(' f1 (mhz) = ',f1)
-  call get_float(' f2 (mhz) = ',f2)            
-  call get_float(' dt (sec) = ',dt)
-  call get_float(' tout (hrs) = ',tout)
-  call get_float(' df0 (mhz) = ',df0)
-  call get_float(' wtb (mhz) = ',wtb)
-  call get_float(' t1 (hrs) = ',t1)
-  call get_float(' t2 (hrs) = ',t2)
-  call get_integer(' number of jobs = ',njob)
-  call get_string( ' matrix file = ',matrix_file)
+!   call get_float(' f1 (mhz) = ',f1)
+!   call get_float(' f2 (mhz) = ',f2)            
+!   call get_float(' dt (sec) = ',dt)
+!   call get_float(' tout (hrs) = ',tout)
+!   call get_float(' df0 (mhz) = ',df0)
+!   call get_float(' wtb (mhz) = ',wtb)
+!   call get_float(' t1 (hrs) = ',t1)
+!   call get_float(' t2 (hrs) = ',t2)
+!   call get_integer(' number of jobs = ',njob)
+!   call get_string( ' matrix file = ',matrix_file)
   
   f1 = f1/1000.0_sp
   f2 = f2/1000.0_sp
@@ -363,4 +423,4 @@ contains
 
 
 
-end program dspec_pre
+end program QnmS

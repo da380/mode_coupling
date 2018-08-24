@@ -49,7 +49,7 @@ program dspec_pro
   real(sp), dimension(10) :: aker
   real(sp), dimension(4)  :: ar1,ar2
   real(sp) :: r1,r2
-  integer(i4b) :: nord,lord
+  integer(i4b) :: nord,lord,lspec,ltime
 
   ! common block for the eigenfunctions parameters
   common/premdata/amp,aker,ar1,ar2,r1,r2,nord,it,lord
@@ -58,6 +58,8 @@ program dspec_pro
   call chekcl('|-p:o:1:[../data]'                   & 
        //'|-t:r:1:Total jobs'                 &  
        //'|-m:o:1:[SPRM1.BIN] mode catalog'  &                   
+       //'|-spec:o:1:[spec_out] prefix for the spectra files'  &                   
+       //'|-time:o:1:[time_out] mode catalog'  &                   
        //'|')
 
   string2 = getunx('-t',1,nbyts)
@@ -65,8 +67,10 @@ program dspec_pro
 
   ! get the total number of jobs
   !call get_integer(' njob = ',njob)
-  call get_string(' spectra file = ',spec_out)
-  call get_string(' time series file = ',time_out)
+  !call get_string(' spectra file = ',spec_out)
+  !call get_string(' time series file = ',time_out)
+  spec_out=getunx('-spec',1,lspec)
+  time_out=getunx('-time',1,ltime)
   
   ! read in the first job to get parameters
   ijob = 1

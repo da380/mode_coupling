@@ -20,6 +20,7 @@ c     in given range
       character*1 iq(MMODES)
       character*80 file
       character*80 getunx
+      character*80 string
       character*160 datapath
 
       common/eig1/n1,jcom1,l1,om1,q1,cgp1,avert1,ahor1,phis1
@@ -56,11 +57,13 @@ c=====================================================================c
 !     1         //'|')
 
 
-      call chekcl('|-p:o:1:[../data]'                    
+      call chekcl('|-fmin:r:1: minimum frequency (mHz)'                   
+     1     //'|-fmax:r:1: minimum frequency (mHz)'                   
      1     //'|-lu2:o:1:[foanis05.222]'                                                                       
      1     //'|-lu7:o:1:[mdcpl.out]'                                                                       
      1     //'|-lu3:o:1:[m1084x2.htm] model on unit 3 (rdmdl)'  
      1     //'|-model:o:1:[S20RTS.sph] Model'                   
+     1     //'|-p:o:1:data folder [../data]'                    
      1     //'|-ref:o:1:[PREM222.BIN] reference model'                   
      1     //'|-pc:o:1:[default.pc] startup plotting commands'                                           
      1     //'|')
@@ -105,17 +108,21 @@ c     read the reference model
 
 
 c     get the minimum frequency
-      print *, ' minimum frequency (mHz):'
-      read(5,*) wmin
+c      print *, ' minimum frequency (mHz):'
+c      read(5,*) wmin
 c      wmin = 0.1
+      string=getunx('-fmin',1,nbyts)
+      read (string,*) wmin
       wmin = pi*wmin/500.
 
 
 
 c     get the maximum frequency
-      print *, ' maximum frequency (mHz):'
-      read(5,*) wmax
+c      print *, ' maximum frequency (mHz):'
+c      read(5,*) wmax
 c      wmax = 4.
+      string=getunx('-fmax',1,nbyts)
+      read (string,*) wmax
       wmax = pi*wmax/500.
 
 
