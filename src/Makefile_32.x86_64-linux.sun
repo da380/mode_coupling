@@ -39,8 +39,8 @@ QnmS: $(MYBIN)/QnmS
 	ls -l $(MYBIN)/QnmS
 
 $(MYBIN)/QnmS:   $(LIBIDSM)/libidsm.a $(MODDIR)/nrtype.mod \
-	$(MODDIR)/nrutil.mod  $(MYOBJ)/module_util.mod \
-	$(MYOBJ)/module_fourier.mod $(MYOBJ)/QnmS.o
+	$(MODDIR)/nrutil.mod  $(MODDIR)/module_util.mod \
+	$(MODDIR)/module_fourier.mod $(MYOBJ)/QnmS.o
 	$(FORT) $(FFLAGS) $(MODFLAG) $(LFLAGS) -o $(MYBIN)/QnmS  \
 	$(MYOBJ)/QnmS.o \
 	$(MYLIB)/libgio.a $(LIBIDSM)/libidsm.a 
@@ -55,12 +55,12 @@ $(MODDIR)/nrutil.mod: nrutil.f90
 	ar rv $(LIBIDSM)/$(LIB).a nrutil.o
 	rm -f nrutil.o
 
-$(MYOBJ)/module_util.mod: module_util.f90 
+$(MODDIR)/module_util.mod: module_util.f90 
 	$(FORT) -moddir=$(MODDIR) $(FFLAGS) -c module_util.f90 
 	ar rv $(LIBIDSM)/$(LIB).a module_util.o
 	rm -f module_util.o
 
-$(MYOBJ)/module_fourier.mod: module_fourier.f90 
+$(MODDIR)/module_fourier.mod: module_fourier.f90 
 	$(FORT) -moddir=$(MODDIR) $(FFLAGS) -c module_fourier.f90 
 	ar rv $(LIBIDSM)/$(LIB).a module_fourier.o
 	rm -f module_fourier.o
