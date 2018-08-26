@@ -1,0 +1,8 @@
+#!/bin/tcsh
+
+set datafolder=../../data
+
+../../bin/mode_list -fmin $1 -fmax $2 -p $datafolder
+
+../../bin/mdcpl -smin $3 -smax $4 -p $datafolder -a matrix_parts.bin
+

@@ -15,6 +15,8 @@ c     in given range
       real w(MMODES)
 
       real wmin,wmax
+      logical exists
+
 
       character*1 imt
       character*1 iq(MMODES)
@@ -73,8 +75,14 @@ c     location of files
 
 c     this opens the PREM model file default foanis05.222
       file=datapath(1:lpath)//'/'//getunx('-lu2',1,ll)
+      inquire(file=file,exist=exists)
+      if(.not.exists) then
+          write(6,"('input file does not exist:',a)") file(1:lnblnk(file))
+          call exit(1)
+      endif
       open(2,file=file,status='old')
-
+      
+    
 
 
 c     this opens the outout file mdcpl.out
@@ -86,6 +94,11 @@ c     this opens the outout file mdcpl.out
 
 c     open the PREM catelog
       file=datapath(1:lpath)//'/'//getunx('-ref',1,ll)
+      inquire(file=file,exist=exists)
+      if(.not.exists) then
+          write(6,"('input file does not exist:',a)") file(1:lnblnk(file))
+          call exit(1)
+      endif
       call openfl(1,file,1,0,0,
      1     istat,5364)
 !      call openfl(1,'/home/eeyore1/john/dta/PREM.BIN',1,0,0,

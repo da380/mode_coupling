@@ -66,7 +66,7 @@ $(MODDIR)/module_fourier.mod: module_fourier.f90
 	rm -f module_fourier.o
 		
 $(MYOBJ)/QnmS.o: QnmS.f90
-	$(FORT) $(FFLAGS) -c -o $(MYOBJ)/QnmS.o QnmS.f90
+	$(FORT) $(MODFLAG) $(FFLAGS) -c -o $(MYOBJ)/QnmS.o QnmS.f90
 
 #------------------------------------------------------------------------------
 

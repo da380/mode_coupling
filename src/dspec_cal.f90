@@ -83,6 +83,7 @@ program dspec_cal
   real(sp), dimension(4)  :: ar1,ar2
   real(sp) :: r1,r2
   integer(i4b) :: nord,it,lord
+  logical(lgt) :: exists
 
   ! common block for the eigenfunctions parameters
   common/premdata/amp,aker,ar1,ar2,r1,r2,nord,it,lord
@@ -101,7 +102,14 @@ program dspec_cal
   ! open the job input file
   write(string,'(i10)') ijob
   j = floor(log10(real(ijob)))
-  open(io1,file=trim(job_pref)//string(10-j:10), & 
+  file=trim(job_pref)//string(10-j:10)
+    inquire(file=file,exist=exists)
+      if(.not.exists) then
+          write(6,"('input file does not exist:',a)") file(1:lnblnk(file))
+          call exit(1)
+      endif
+
+  open(io1,file=file, & 
        form='unformatted')
 
 
@@ -133,6 +141,11 @@ program dspec_cal
   allocate(vr(nelem,nr),vs(nelem))
  
   ! read in the coupling matrices 
+    inquire(file=trim(matrix_file),exist=exists)
+      if(.not.exists) then
+          write(6,"('input file does not exist:',a)") trim(matrix_file)
+          call exit(1)
+      endif
   open(io1,file=trim(matrix_file),form='unformatted')
   read(io1) a0
   read(io1) a1
@@ -144,7 +157,12 @@ program dspec_cal
   
   ! open the mode catalog
   file = datapath(1:lpath)//'/'//getunx('-m',1,lmod)
-
+    inquire(file=file,exist=exists)
+      if(.not.exists) then
+          write(6,"('input file does not exist:',a)") file(1:lnblnk(file))
+          call exit(1)
+      endif
+      
   call openfl(7,file, & 
        1 ,0,0,istat,4096)
 

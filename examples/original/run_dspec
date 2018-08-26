@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# set the number of processors
+njob=4
+
+datafolder=../../data
+../../bin/dspec_pre -p $datafolder  << !
+dspec.source
+dspec.rec
+0.1
+2
+20
+128
+0.01
+0.05
+0
+128
+$njob
+matrix_parts.bin
+!
+
+
+for i in $(seq 1 $njob)
+do
+../../bin/dspec_cal -j $i -p $datafolder > dspec_cal.out.$i &
+done
+wait
+
+../../bin/dspec_pro -t $njob -p $datafolder  -spec dspec.out -time dspec.ts
+

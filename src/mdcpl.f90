@@ -16,6 +16,7 @@ program mdcpl
   complex(dpc), dimension(-ML:ML,-ML:ML) :: z0
   complex(dpc), dimension(-ML:ML,-ML:ML) :: z1
   complex(dpc), dimension(-ML:ML,-ML:ML) :: z2
+  logical(lgt) :: exists
 
 
   complex(dpc) :: w0,w1,w2,dsw1,dsw2,wsum
@@ -86,6 +87,7 @@ program mdcpl
        //'|-lu3:o:1:[m1084x2.htm] model on unit 3 (rdmdl)' & 
        //'|-ref:o:1:[PREM222.BIN] reference model'  &                   
        //'|-model:o:1:[S20RTS.sph] Model'                  & 
+       //'|-a:o:1:[matrix-parts.bin] Coupling matrix'                  & 
        //'|-pc:o:1:[default.pc] startup plotting commands' &
        //'|')
 
@@ -111,6 +113,11 @@ program mdcpl
       datapath=getunx('-p',1,lpath)
   
   file = datapath(1:lpath)//'/'//getunx('-lu2',1,ll)
+      inquire(file=file,exist=exists)
+      if(.not.exists) then
+          write(6,"('input file does not exist:',a)") file(1:lnblnk(file))
+          call exit(1)
+      endif
   open(2,file=file,status='old')
   file=getunx('-lu7',1,ll)
   open(7,file=file)
@@ -122,7 +129,11 @@ program mdcpl
   ! open the PREM mode catalogue
   refmodel=getunx('-ref',1,lref)
   file=datapath(1:lpath)//'/'//refmodel(1:lnblnk(refmodel))
-  
+      inquire(file=file,exist=exists)
+      if(.not.exists) then
+          write(6,"('input file does not exist:',a)") file(1:lnblnk(file))
+          call exit(1)
+      endif  
   call openfl(1,file,1,0,0,istat,5364)
   call seteig(1)
 
@@ -152,7 +163,14 @@ program mdcpl
   fus=1.0
   !Restored by APV
   model3d=getunx('-model',1,ll)
-  call intpltnnew(datapath(1:lpath)//'/'//model3d(1:lnblnk(model3d)))
+  file=datapath(1:lpath)//'/'//model3d(1:lnblnk(model3d))
+      inquire(file=file,exist=exists)
+      if(.not.exists) then
+          write(6,"('input file does not exist:',a)") file(1:lnblnk(file))
+          call exit(1)
+      endif
+
+  call intpltnnew(file)
   
   !! alternate version that reads in separate vs, vp, and rho
   !! models
@@ -172,9 +190,9 @@ program mdcpl
 !   read(5,"(i1)")isw2
 !   write(6,*) " afile = "
 !   read(5,*) afile
-  afile='matrix-'//refmodel(1:lnblnk(refmodel))//'-'//model3d(1:lnblnk(model3d))//'.bin'
-
-
+  !afile='matrix-'//refmodel(1:lnblnk(refmodel))//'-'//model3d(1:lnblnk(model3d))//'.bin'
+  !afile='matrix-parts.bin'
+  afile=getunx('-a',1,lafile)
 
 
   ! Read in list of modes from input file
