@@ -1,0 +1,78 @@
+FORTRAN = F95
+CC=gcc
+MYLIB= $(MYLIB$(FORTRAN))
+MYOBJ= $(MYOBJ$(FORTRAN))
+MYBIN= $(MYBIN$(FORTRAN))
+MODDIR = $(MYMOD$(FORTRAN))
+F.G95 = g95
+F.F95 = f95
+FFLAGS= $(FFLAG$(FORTRAN)) -m32
+FORT= f95
+#
+LFLAGS= -L$(MYLIB)
+MODFLAG=-M$(MODDIR)
+#
+LIBIO = -lgio
+
+LIBIDSM= $(MYLIB)
+OPTFLAGS=-O3
+CFLAGS=$(OPTFLAGS) -m32
+LIB=libidsm
+
+
+.f.o:
+	$(FORT) $(FFLAGS) -c $*.f
+	
+.c.o:
+	$(CC) -c $(CFLAGS) -c $*.c
+	
+.f.a:
+	$(FORT) -c $(FFLAGS) -c $<
+	ar rv $@ $*.o
+	rm -f $*.o
+
+all: QnmS 
+	
+#------------------------------------------------------------------------------
+
+QnmS: $(MYBIN)/QnmS
+	ls -l $(MYBIN)/QnmS
+
+$(MYBIN)/QnmS:   $(LIBIDSM)/libidsm.a $(MODDIR)/nrtype.mod \
+	$(MODDIR)/nrutil.mod  $(MYOBJ)/module_util.mod \
+	$(MYOBJ)/module_fourier.mod $(MYOBJ)/QnmS.o
+	$(FORT) $(FFLAGS) $(MODFLAG) $(LFLAGS) -o $(MYBIN)/QnmS  \
+	$(MYOBJ)/QnmS.o \
+	$(MYLIB)/libgio.a $(LIBIDSM)/libidsm.a 
+
+$(MODDIR)/nrtype.mod: nrtype.f90 
+	$(FORT) -moddir=$(MODDIR) $(FFLAGS) -c nrtype.f90 
+	ar rv $(LIBIDSM)/$(LIB).a nrtype.o
+	rm -f nrtype.o
+
+$(MODDIR)/nrutil.mod: nrutil.f90 
+	$(FORT) -moddir=$(MODDIR) $(FFLAGS) -c nrutil.f90 
+	ar rv $(LIBIDSM)/$(LIB).a nrutil.o
+	rm -f nrutil.o
+
+$(MYOBJ)/module_util.mod: module_util.f90 
+	$(FORT) -moddir=$(MODDIR) $(FFLAGS) -c module_util.f90 
+	ar rv $(LIBIDSM)/$(LIB).a module_util.o
+	rm -f module_util.o
+
+$(MYOBJ)/module_fourier.mod: module_fourier.f90 
+	$(FORT) -moddir=$(MODDIR) $(FFLAGS) -c module_fourier.f90 
+	ar rv $(LIBIDSM)/$(LIB).a module_fourier.o
+	rm -f module_fourier.o
+		
+$(MYOBJ)/QnmS.o: QnmS.f90
+	$(FORT) $(FFLAGS) -c -o $(MYOBJ)/QnmS.o QnmS.f90
+
+#------------------------------------------------------------------------------
+
+$(LIBIDSM)/$(LIB).a: \
+	$(LIBIDSM)/$(LIB).a(csubs.o) \
+	$(LIBIDSM)/$(LIB).a(rdsource.o) \
+	$(LIBIDSM)/$(LIB).a(julday.o) \
+	$(LIBIDSM)/$(LIB).a(lpyr.o) 
+	ranlib $(LIBIDSM)/$(LIB).a

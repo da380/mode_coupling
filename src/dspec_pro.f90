@@ -58,8 +58,8 @@ program dspec_pro
   call chekcl('|-p:o:1:[../data]'                   & 
        //'|-t:r:1:Total jobs'                 &  
        //'|-m:o:1:[SPRM1.BIN] mode catalog'  &                   
-       //'|-spec:o:1:[spec_out] prefix for the spectra files'  &                   
-       //'|-time:o:1:[time_out] mode catalog'  &                   
+       //'|-spec:o:1:[spec.out] prefix for the spectra files'  &                   
+       //'|-time:o:1:[time.out] mode catalog'  &                   
        //'|')
 
   string2 = getunx('-t',1,nbyts)

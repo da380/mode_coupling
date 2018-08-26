@@ -9,3 +9,7 @@ examples/matrix_parts.bin
 examples/dspec.out.*
 examples/modes.out
 examples/mdcpl.out
+examples/.ipynb_checkpoints
+examples/matrix*.bin
+examples/modes.in
+examples/modes.in.freq

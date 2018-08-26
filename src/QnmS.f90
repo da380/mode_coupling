@@ -34,7 +34,7 @@ program QnmS
   integer(i4b) :: mtot,nelem,im,i,j,info,istat, & 
        nindex,ifgot,nw,iw,ir1,nt,i1,i2,mex,qex,nt0,ne, & 
        ntb,md,iter,mindex,ib,jb,tbd,it,count,ntime, & 
-       njob,ncal,ntmp,i11,i22,nr,ir,nbyts,loutdir,ierror,lmat
+       njob,ncal,ntmp,i11,i22,nr,ir,nbyts,loutdir,ierror,lmat,lnblnk,system
 
   integer(i4b), dimension(:), allocatable :: nn,ll,ity
 
