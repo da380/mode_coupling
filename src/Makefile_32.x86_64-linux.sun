@@ -74,5 +74,7 @@ $(LIBIDSM)/$(LIB).a: \
 	$(LIBIDSM)/$(LIB).a(csubs.o) \
 	$(LIBIDSM)/$(LIB).a(rdsource.o) \
 	$(LIBIDSM)/$(LIB).a(julday.o) \
+	$(LIBIDSM)/$(LIB).a(tadder.o) \
+	$(LIBIDSM)/$(LIB).a(tdiffer.o) \
 	$(LIBIDSM)/$(LIB).a(lpyr.o) 
 	ranlib $(LIBIDSM)/$(LIB).a

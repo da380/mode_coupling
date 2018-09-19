@@ -87,7 +87,7 @@ program mdcpl
        //'|-lu3:o:1:[m1084x2.htm] model on unit 3 (rdmdl)' & 
        //'|-ref:o:1:[PREM222.BIN] reference model'  &                   
        //'|-model:o:1:[S20RTS.sph] Model'                  & 
-       //'|-a:o:1:[matrix-parts.bin] Coupling matrix'                  & 
+       //'|-a:o:1:[matrix_parts.bin] Coupling matrix'                  & 
        //'|-pc:o:1:[default.pc] startup plotting commands' &
        //'|')
 

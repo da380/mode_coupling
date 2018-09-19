@@ -28,14 +28,15 @@ program QnmS
   character(len=256) :: rec_file
   character(len=80) :: getunx
   character(len=10), dimension(:), allocatable :: rec_string
+  character(len=8) ::  stn,chn
 
 
-
+  real(sp),parameter :: dtr=6.2831853/360.
   integer(i4b), parameter :: io1 = 7,io2=8,io3=9,io4=10
   integer(i4b) :: mtot,nelem,im,i,j,info,istat, & 
        nindex,ifgot,nw,iw,ir1,nt,i1,i2,mex,qex,nt0,ne, & 
        ntb,md,iter,mindex,ib,jb,tbd,it,count,ntime, & 
-       njob,ncal,ntmp,i11,i22,nr,ir,nbyts,loutdir,ierror,lmat,lnblnk,system
+       njob,ncal,ntmp,i11,i22,nr,ir,nbyts,loutdir,ierror,lmat,lnblnk,system,ios,nlines
 
   integer(i4b), dimension(:), allocatable :: nn,ll,ity
 
@@ -46,6 +47,8 @@ program QnmS
        f11,f12,f21,f22,t,t11,t12,t21,t22,fac,filt, & 
        f,df0,wtb,qq,time1,time2,atime,acount,fmin,fmax, &
        t1,t2
+       
+  real(dp) :: stla,stlo,stele,stbur,stazi,stdip,spsec
   
 
   complex(spc) :: w,aclr,aclr0,cfac
@@ -60,7 +63,8 @@ program QnmS
   
   ! cmt source
   integer(i4b) :: iyr,imo,ida,iho,imi,jda,julday,ityphdur,itypso,ierr
-  real(sp) :: hdur,epla,eplo,dep,fsec,tcmt
+  integer(i4b) :: nps,iyr1,ijd1,iho1,imi1,iprtlv
+  real(sp) :: hdur,epla,eplo,dep,fsec,tcmt,fsc1,dt0,t0
   real(sp), dimension(6) :: xm
 
   ! common block for the eigenfunctions parameters
@@ -83,6 +87,8 @@ program QnmS
        //'|   -v:o:0,1:Verbosity level [0]'  &                   
        //'|')
 
+  tempstr = getunx('-v',1,nbyts)
+  read (tempstr,*) iprtlv 
   tempstr = getunx('-njob',1,nbyts)
   read (tempstr,*) njob
   tempstr = getunx('-f1',1,nbyts)
@@ -194,26 +200,72 @@ program QnmS
   end do
   ! normalize the moment tensor so that the 
   ! output displacements are in cm's
+  ! note that QnmA also applies this factor around line 282
   source(4:9) = source(4:9)*0.95179e-30_sp
 
 
   ! receiver location
   !call get_string(' receiver file = ',rec_file )
   rec_file=getunx('-L',1,nbyts)
-  inquire(file=rec_file,exist=exists)
-  if(.not.exists) then
-    write(6,"('receiver file does not exist:',a)") rec_file(1:nbyts)
-    call exit(1)
-  endif!
+!   inquire(file=rec_file,exist=exists)
+!   if(.not.exists) then
+!     write(6,"('receiver file does not exist:',a)") rec_file(1:nbyts)
+!     call exit(1)
+!   endif!
   
+!  open(99,file=trim(rec_file))
+!  read(99,*) nr
+!  allocate(station(5,nr))
+!  allocate(rec_string(nr))
+!  do j = 1,nr
+!        read(99,*) station(1:5,j),rec_string(j)
+!  end do
+!  close(99)
+
+!
+!---- loop on records
+!
   open(99,file=trim(rec_file))
-  read(99,*) nr
-  allocate(station(5,nr))
-  allocate(rec_string(nr))
-  do j = 1,nr
-        read(99,*) station(1:5,j),rec_string(j)
-  end do
-  close(99)
+  nlines = 0 
+  DO 
+    READ (99,*, END=10) 
+    nlines = nlines + 1 
+  END DO 
+10 rewind(99)
+  allocate(station(5,nlines))
+  allocate(rec_string(nlines))
+  
+  
+
+  ios=0
+  nr=0
+  do while(ios.eq.0)
+  read(1,"(a8,1x,a8,1x,f8.4,1x,f9.4,1x,f6.1,1x,f6.1,f6.1,1x,f6.1,1x,f12.4,1x,i7,1x,i4,1x,i3,1x,i2,1x,i2,1x,f6.3)",iostat=ios) & 
+          stn,chn,stla,stlo,stele,stbur,stazi,stdip,spsec, & 
+          nps,iyr1,ijd1,iho1,imi1,fsc1
+        if(iprtlv.gt.0) then
+          write(6,"(4i5,f6.1,4i5,f6.1)")iyr1,ijd1,iho1,imi1,fsc1,iyr,jda,iho,imi,fsec+tcmt
+        endif
+        if(ios.eq.0) then
+          nr=nr+1
+          if(iyr1.eq.0) then
+            call tadder(iyr,jda,iho,imi,fsec,iyr1,ijd1,iho1,imi1,fsc1,dble(tcmt))
+            t0=0.
+          else
+            call tdiffer(iyr1,ijd1,iho1,imi1,fsc1,iyr,jda,iho,imi,fsec+tcmt,dt0)
+            t0=sngl(dt0)
+          endif
+          rec_string(nr)=stn(1:lnblnk(stn))//'.'//chn(1:lnblnk(chn))
+          station(1,nr)=stla
+          station(2,nr)=stlo
+          station(3,nr)=sin(dtr*stdip)*cos(dtr*stazi)
+          station(4,nr)=sin(dtr*stdip)*cos(dtr*stazi)
+          station(5,nr)=sin(dtr*stdip)*cos(dtr*stazi)
+        endif
+        
+    enddo
+    
+    stop
 
 !
 !---- get the name of the output directory

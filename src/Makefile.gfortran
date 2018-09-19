@@ -156,6 +156,8 @@ $(BINDIR)/QnmS: $(OBJDIR)/nrtype.o \
 	$(OBJDIR)/chekcl.o \
 	$(OBJDIR)/csubs.o \
 	$(OBJDIR)/rdsource.o \
+	$(OBJDIR)/tadder.o \
+	$(OBJDIR)/tdiffer.o \
 	$(OBJDIR)/julday.o \
 	$(OBJDIR)/lpyr.o \
 	$(OBJDIR)/QnmS.o

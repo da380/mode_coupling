@@ -548,8 +548,8 @@ program dspec_cal
      acl(iw,:) = -w*w*acl(iw,:)
 
      ! output is displacement spectrum for Dirac source
-!     acl(iw,:) = ii*w*acl(iw,:)
-     
+!     acl(iw,:) = ii*w*acl(iw,:)     
+
      xsave = xr
      saved = 1
      

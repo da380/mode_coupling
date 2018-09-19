@@ -209,6 +209,9 @@ program dspec_pro
      filt = hann(f,f11,f12,f21,f22)
      dat(:,i) = filt*dat(:,i)
   end do
+  
+  ! Potentially add the source time function
+  ! fourier transform of the source time function at the complex frequency
     
   ! do the negative frequencies
   j = 0
