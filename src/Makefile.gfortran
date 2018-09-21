@@ -39,6 +39,7 @@ mdcpl: $(BINDIR)/mdcpl
 dspec_pre: $(BINDIR)/dspec_pre
 dspec_cal: $(BINDIR)/dspec_cal
 dspec_pro: $(BINDIR)/dspec_pro
+dspec_eigd: $(BINDIR)/dspec_eigd
 QnmS: $(BINDIR)/QnmS
 
 
@@ -193,6 +194,33 @@ $(BINDIR)/dspec_cal: $(OBJDIR)/csubs.o \
 
 
 $(BINDIR)/dspec_pro: \
+	$(OBJDIR)/csubs.o \
+	$(OBJDIR)/istlen.o \
+	$(OBJDIR)/cat2s.o \
+	$(OBJDIR)/check.o \
+	$(OBJDIR)/rcreao.o \
+	$(OBJDIR)/ffstat.o \
+	$(OBJDIR)/nrutil.o \
+	$(OBJDIR)/module_util.o \
+	$(OBJDIR)/module_fourier.o \
+	$(OBJDIR)/gpremlib.o \
+	$(OBJDIR)/opnflc_cut.o \
+	$(OBJDIR)/opnfil.o \
+	$(OBJDIR)/openfl.o \
+	$(OBJDIR)/byswap.o \
+	$(OBJDIR)/bffis.o \
+	$(OBJDIR)/bffi.o \
+	$(OBJDIR)/bffibs4.o \
+	$(OBJDIR)/fgetenv.o \
+	$(OBJDIR)/getgnl.o \
+	$(OBJDIR)/chekgl.o \
+	$(OBJDIR)/getunx.o \
+	$(OBJDIR)/chekcl.o \
+	$(OBJDIR)/dspec_pro.o
+	$(F95LINK) -o $@ $+  $(LAPACK_LINK)
+
+
+$(BINDIR)/dspec_eigd: \
 	$(OBJDIR)/csubs.o \
 	$(OBJDIR)/istlen.o \
 	$(OBJDIR)/cat2s.o \
