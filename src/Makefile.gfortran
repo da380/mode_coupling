@@ -31,7 +31,7 @@ $(OBJDIR)/%.o:%.c
 
 .PHONY: all mode_list mdcpl_sp mdcpl dspec_pre dspec_cal dspec_pro QnmS
 
-all: mode_list mdcpl_sp mdcpl dspec_pre dspec_cal dspec_pro QnmS
+all: mode_list mdcpl_sp mdcpl dspec_pre dspec_cal dspec_pro dspec_eigd QnmS
 
 mode_list: $(BINDIR)/mode_list
 mdcpl_sp: $(BINDIR)/mdcpl_sp
